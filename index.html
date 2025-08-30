@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Credit Card Checker - DARKXCODE</title>
+    <link rel="icon" href="img/darkxcode.PNG" type="image/png" sizes="16x16">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<!--
+   $ TEAM    : https://https://instagram.com/darkxcode_
+   $ AUTHOR  : https://t.me/zlaxtert 
+   $ CODE    : https://t.me/zexkings 
+   $ DESIGN  : https://t.me/danielsmt 
+   $ VERSION : 1.0
+-->
+<body>
+    <div class="container py-4">
+        <header class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <h1 class="h2 text-primary mb-2">
+                <i class="bi bi-credit-card me-2"></i>Bulk Credit Card Checker
+            </h1>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round"></div>
+                </label>
+                <em>Dark Mode</em>
+            </div>
+        </header>
+
+        <form id="checkerForm">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-key me-2"></i>API Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="apikey" class="form-label">API Key:</label>
+                        <input type="text" class="form-control" id="apikey" required>
+                        <div class="form-text">How to get apikey you can contact telegram <a href="https://t.me/zlaxtert" target="_blank">https://t.me/zlaxtert</a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-shield-check me-2"></i>Proxy Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="proxy" class="form-label">Proxy Lists (IP:PORT):</label>
+                        <textarea class="form-control font-monospace" id="proxy" rows="3" required placeholder="192.168.1.1:8080&#10;192.168.1.2:8080"></textarea>
+                        <div class="form-text">Use multiple proxies for rotating. Format: IP:PORT (one proxy per line)</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="proxyAuth" class="form-label">Proxy Auth (Username:Password):</label>
+                            <input type="text" class="form-control" id="proxyAuth" placeholder="optional">
+                            <div class="form-text">Optional: username:password if the proxy requires authentication</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="proxyType" class="form-label">Type Proxy:</label>
+                            <select class="form-select" id="proxyType" required>
+                                <option value="http">HTTP</option>
+                                <option value="socks4">SOCKS4</option>
+                                <option value="socks5">SOCKS5</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Checking Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="gateway" class="form-label">Gateway:</label>
+                            <select class="form-select" id="gateway" required>
+                                <option value="vbv">VBV</option>
+                                <option value="braintree">BRAINTREE</option>
+                                <option value="stripe">STRIPE</option>
+                                <option value="stripe_charger">STRIPE CHARGER</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="delay" class="form-label">Delay between requests (ms):</label>
+                            <input type="number" class="form-control" id="delay" value="1000" min="0" max="10000">
+                            <div class="form-text">Delay between CC checks (in milliseconds)</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ccLists" class="form-label">CC Lists (format: cc_number|month|year|cvv):</label>
+                        <textarea class="form-control font-monospace" id="ccLists" rows="10" required placeholder="4123123412341234|01|2030|123&#10;5123512351235123|02|2029|456"></textarea>
+                        <div class="form-text">Format: cc_number|month|year|cvv (example: 4123123412341234|01|2030|123). One CC per line.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex mb-4">
+                <button type="submit" class="btn btn-primary flex-fill" id="checkBtn">
+                    <i class="bi bi-play-circle me-2"></i>Start Checking
+                </button>
+                <button type="button" class="btn btn-danger flex-fill" id="stopBtn">
+                    <i class="bi bi-stop-circle me-2"></i>Stop Checking
+                </button>
+            </div>
+        </form>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-transparent">
+                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Progress</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-2" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="progress-text text-center fw-bold">0/0</div>
+            </div>
+        </div>
+
+        <div class="alert alert-info mb-4" id="statusInfo">
+            <i class="bi bi-info-circle me-2"></i>Status: Waiting to start...
+        </div>
+
+        <div class="results">
+            <div class="accordion" id="resultsAccordion">
+                <div class="accordion-item mb-3 shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-success text-white" type="button" data-bs-toggle="collapse" data-bs-target="#liveResultsCollapse">
+                            <i class="bi bi-check-circle me-2"></i>LIVE (Success)
+                            <span class="badge bg-light text-dark ms-2" id="liveCount">0</span>
+                        </button>
+                    </h2>
+                    <div id="liveResultsCollapse" class="accordion-collapse collapse show" data-bs-parent="#resultsAccordion">
+                        <div class="accordion-body">
+                            <button id="copyLive" class="btn btn-sm btn-outline-primary mb-2">
+                                <i class="bi bi-clipboard me-1"></i>Copy
+                            </button>
+                            <div id="liveResults" class="result-container" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item mb-3 shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-warning text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#cvvResultsCollapse">
+                            <i class="bi bi-exclamation-triangle me-2"></i>CVV
+                            <span class="badge bg-light text-dark ms-2" id="cvvCount">0</span>
+                        </button>
+                    </h2>
+                    <div id="cvvResultsCollapse" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                        <div class="accordion-body">
+                            <button id="copyCVV" class="btn btn-sm btn-outline-primary mb-2">
+                                <i class="bi bi-clipboard me-1"></i>Copy
+                            </button>
+                            <div id="cvvResults" class="result-container" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item mb-3 shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-info text-white" type="button" data-bs-toggle="collapse" data-bs-target="#ccnResultsCollapse">
+                            <i class="bi bi-credit-card me-2"></i>CCN
+                            <span class="badge bg-light text-dark ms-2" id="ccnCount">0</span>
+                        </button>
+                    </h2>
+                    <div id="ccnResultsCollapse" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                        <div class="accordion-body">
+                            <button id="copyCCN" class="btn btn-sm btn-outline-primary mb-2">
+                                <i class="bi bi-clipboard me-1"></i>Copy
+                            </button>
+                            <div id="ccnResults" class="result-container" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item mb-3 shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-danger text-white" type="button" data-bs-toggle="collapse" data-bs-target="#dieResultsCollapse">
+                            <i class="bi bi-x-circle me-2"></i>DIE (Failed)
+                            <span class="badge bg-light text-dark ms-2" id="dieCount">0</span>
+                        </button>
+                    </h2>
+                    <div id="dieResultsCollapse" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                        <div class="accordion-body">
+                            <button id="deleteDie" class="btn btn-sm btn-outline-danger mb-2">
+                                <i class="bi bi-trash me-1"></i>Delete All
+                            </button>
+                            <div id="dieResults" class="result-container" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item mb-3 shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-secondary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#errorResultsCollapse">
+                            <i class="bi bi-bug me-2"></i>Error
+                            <span class="badge bg-light text-dark ms-2" id="errorCount">0</span>
+                        </button>
+                    </h2>
+                    <div id="errorResultsCollapse" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                        <div class="accordion-body">
+                            <button id="deleteError" class="btn btn-sm btn-outline-danger mb-2">
+                                <i class="bi bi-trash me-1"></i>Delete All
+                            </button>
+                            <div id="errorResults" class="result-container" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 pt-4 text-center border-top">
+            <p>&copy; <span id="currentYear"></span> <a href="https://darkxcode.site" target="_blank">DARKXCODE</a>. Author: <a href="https://t.me/zlaxtert" target="_blank">ZLAXTERT</a></p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/js.js" type="text/javascript"></script>
+
+</body>
+</html>
